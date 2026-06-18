@@ -1,0 +1,45 @@
+name: VocabGame
+options:
+  bundleIdPrefix: com.nedcutler
+  deploymentTarget:
+    iOS: "18.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+targets:
+  VocabGame:
+    type: application
+    platform: iOS
+    sources:
+      - path: VocabGame
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.nedcutler.VocabGame
+        PRODUCT_NAME: VocabGame
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Vocab
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
+  VocabGameTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: VocabGameTests
+    dependencies:
+      - target: VocabGame
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.nedcutler.VocabGameTests
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  VocabGame:
+    build:
+      targets:
+        VocabGame: all
+        VocabGameTests: [test]
+    test:
+      targets:
+        - VocabGameTests

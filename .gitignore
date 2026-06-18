@@ -1,0 +1,6 @@
+DerivedData/
+build/
+.xcodebuildmcp/
+*.xcuserdata/
+*.xcuserstate
+.DS_Store
