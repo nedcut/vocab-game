@@ -5,15 +5,16 @@ import Observation
 @Observable
 final class AppStore {
   var selectedGroupID = SampleData.groups[0].id {
-    didSet { persist() }
+    didSet { persistIfHydrated() }
   }
 
   var completedGames: [String: GameCompletion] = [:] {
-    didSet { persist() }
+    didSet { persistIfHydrated() }
   }
 
   var notificationsEnabled = false {
     didSet {
+      guard isHydrated else { return }
       persist()
       Task { await syncReminder() }
     }
@@ -21,6 +22,7 @@ final class AppStore {
 
   var preferredReminderHour = 19 {
     didSet {
+      guard isHydrated else { return }
       persist()
       Task { await syncReminder() }
     }
@@ -35,6 +37,12 @@ final class AppStore {
 
   private let persistence: AppPersistence
   private let reminderScheduler: ReminderNotificationScheduler
+
+  // `@Observable` rewrites stored properties so their `didSet` observers fire even
+  // when assigned inside `init`. Gate the persistence/scheduling side effects on this
+  // flag so hydrating from a snapshot only restores state instead of rewriting it and
+  // kicking off duplicate reminder syncs before `prepareForLaunch()` runs.
+  @ObservationIgnored private var isHydrated = false
 
   init(
     persistence: AppPersistence = .live,
@@ -51,6 +59,8 @@ final class AppStore {
       notificationsEnabled = snapshot.notificationsEnabled
       preferredReminderHour = snapshot.preferredReminderHour
     }
+
+    isHydrated = true
   }
 
   var selectedGroup: FriendGroup {
@@ -208,6 +218,11 @@ final class AppStore {
         hasPlayed: row.hasPlayed
       )
     }
+  }
+
+  private func persistIfHydrated() {
+    guard isHydrated else { return }
+    persist()
   }
 
   private func persist() {
