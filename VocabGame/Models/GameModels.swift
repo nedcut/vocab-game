@@ -50,13 +50,33 @@ struct ScoringRule: Hashable {
   }
 }
 
-struct GameCompletion: Identifiable, Hashable {
+struct GameCompletion: Identifiable, Hashable, Codable {
   var id: String { gameID }
   let gameID: String
   let score: Int
   let correct: Int
   let total: Int
   let completedAt: Date
+}
+
+enum ReminderPermissionStatus: String, Hashable, Codable {
+  case unknown
+  case notDetermined
+  case denied
+  case authorized
+  case provisional
+  case ephemeral
+
+  var title: String {
+    switch self {
+    case .unknown: "Not checked"
+    case .notDetermined: "Ready to ask"
+    case .denied: "Disabled in Settings"
+    case .authorized: "Allowed"
+    case .provisional: "Quietly allowed"
+    case .ephemeral: "Temporarily allowed"
+    }
+  }
 }
 
 struct FriendGroup: Identifiable, Hashable {

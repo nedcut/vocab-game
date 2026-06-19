@@ -1,7 +1,9 @@
 import SwiftUI
+import UIKit
 
 struct GroupsView: View {
   @Environment(AppStore.self) private var store
+  @State private var inviteGroup: FriendGroup?
 
   var body: some View {
     @Bindable var store = store
@@ -54,6 +56,7 @@ struct GroupsView: View {
         .panel()
 
         Button {
+          inviteGroup = store.selectedGroup
         } label: {
           Label("Invite people", systemImage: "person.badge.plus")
             .frame(maxWidth: .infinity)
@@ -65,5 +68,76 @@ struct GroupsView: View {
     }
     .background(AppTheme.background)
     .navigationTitle("Groups")
+    .sheet(item: $inviteGroup) { group in
+      GroupInviteSheet(group: group)
+    }
+  }
+}
+
+private struct GroupInviteSheet: View {
+  @Environment(\.dismiss) private var dismiss
+
+  let group: FriendGroup
+
+  @State private var didCopy = false
+
+  private var inviteText: String {
+    "Join my \(group.name) daily vocab group with code \(group.inviteCode)."
+  }
+
+  var body: some View {
+    NavigationStack {
+      VStack(alignment: .leading, spacing: 18) {
+        VStack(alignment: .leading, spacing: 8) {
+          Text("Invite to \(group.name)")
+            .font(.title.weight(.bold))
+          Text("Share this code with family or friends. In the backend version, this becomes a magic invite link.")
+            .font(.subheadline)
+            .foregroundStyle(AppTheme.quietInk)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+
+        VStack(alignment: .leading, spacing: 10) {
+          Text("Group code")
+            .font(.headline)
+          Text(group.inviteCode)
+            .font(.system(size: 34, weight: .bold, design: .rounded).monospaced())
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .textSelection(.enabled)
+        }
+        .panel()
+
+        Button {
+          UIPasteboard.general.string = group.inviteCode
+          didCopy = true
+        } label: {
+          Label(didCopy ? "Copied" : "Copy code", systemImage: didCopy ? "checkmark.circle.fill" : "doc.on.doc.fill")
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.large)
+
+        ShareLink(item: inviteText) {
+          Label("Share invite", systemImage: "square.and.arrow.up")
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.large)
+
+        Spacer()
+      }
+      .padding(20)
+      .background(AppTheme.background)
+      .navigationTitle("Invite")
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .topBarTrailing) {
+          Button("Done") {
+            dismiss()
+          }
+        }
+      }
+    }
+    .presentationDetents([.medium, .large])
   }
 }

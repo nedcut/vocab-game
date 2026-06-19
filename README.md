@@ -6,9 +6,12 @@ An iPhone-first SwiftUI prototype for private daily word games with friend-group
 
 - Three daily multiple-choice word games.
 - Local mock data for multiple groups, friends, scores, and weekly totals.
+- Persisted local state for selected group, finished games, and reminder settings.
 - Spoiler-safe daily leaderboards: friend scores are hidden until you finish that game.
+- Daily aggregate leaderboards once all games are complete.
 - Weekly leaderboards for each game and aggregate totals.
-- Placeholder profile surface for Apple Sign In, Supabase-backed accounts, invites, and notifications.
+- Local reminder notification scheduling from the Profile tab.
+- Placeholder profile surface for Apple Sign In, Supabase-backed accounts, and invites.
 
 ## Tooling
 
@@ -21,7 +24,7 @@ xcodegen generate
 Build the app for the iOS Simulator SDK:
 
 ```sh
-xcodebuild -project VocabGame.xcodeproj -scheme VocabGame -sdk iphonesimulator -derivedDataPath DerivedData build
+xcodebuild -project VocabGame.xcodeproj -target VocabGame -sdk iphonesimulator build
 ```
 
 Compile the XCTest bundle:

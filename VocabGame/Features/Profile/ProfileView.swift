@@ -38,6 +38,20 @@ struct ProfileView: View {
         VStack(alignment: .leading, spacing: 14) {
           Toggle("Daily reminder", isOn: $store.notificationsEnabled)
           Stepper("Reminder hour: \(store.preferredReminderHour):00", value: $store.preferredReminderHour, in: 7...22)
+
+          HStack(spacing: 10) {
+            Image(systemName: store.notificationsEnabled ? "bell.badge.fill" : "bell.slash.fill")
+              .foregroundStyle(store.notificationsEnabled ? AppTheme.mint : AppTheme.quietInk)
+              .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+              Text(store.reminderStatus.title)
+                .font(.subheadline.weight(.semibold))
+              Text(store.reminderMessage)
+                .font(.caption)
+                .foregroundStyle(AppTheme.quietInk)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+          }
         }
         .panel()
 
