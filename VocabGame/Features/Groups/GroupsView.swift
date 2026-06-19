@@ -109,7 +109,11 @@ private struct GroupInviteSheet: View {
 
         Button {
           UIPasteboard.general.string = group.inviteCode
-          didCopy = true
+          withAnimation { didCopy = true }
+          Task {
+            try? await Task.sleep(for: .seconds(2))
+            withAnimation { didCopy = false }
+          }
         } label: {
           Label(didCopy ? "Copied" : "Copy code", systemImage: didCopy ? "checkmark.circle.fill" : "doc.on.doc.fill")
             .frame(maxWidth: .infinity)
