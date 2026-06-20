@@ -95,22 +95,44 @@ struct OnboardingView: View {
             finish()
           }
           .font(.body.weight(.semibold))
+          .disabled(!canFinish)
         }
       }
     }
     .interactiveDismissDisabled()
   }
 
+  private var canFinish: Bool {
+    switch mode {
+    case .pick:
+      true
+    case .create:
+      !trimmedGroupName.isEmpty
+    case .join:
+      !trimmedInviteCode.isEmpty
+    }
+  }
+
   private func finish() {
+    guard canFinish else { return }
+
     switch mode {
     case .pick:
       break
     case .create:
-      store.createLocalGroup(named: groupName)
+      store.createLocalGroup(named: trimmedGroupName)
     case .join:
-      store.joinGroup(inviteCode: inviteCode)
+      store.joinGroup(inviteCode: trimmedInviteCode)
     }
     store.completeOnboarding(enableReminders: enableReminders)
+  }
+
+  private var trimmedGroupName: String {
+    groupName.trimmingCharacters(in: .whitespacesAndNewlines)
+  }
+
+  private var trimmedInviteCode: String {
+    inviteCode.trimmingCharacters(in: .whitespacesAndNewlines)
   }
 }
 
