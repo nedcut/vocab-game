@@ -4,7 +4,8 @@ An iPhone-first SwiftUI prototype for private daily word games with friend-group
 
 ## Current Prototype
 
-- Three daily multiple-choice word games.
+- Three daily multiple-choice word games from deterministic date-based content packs.
+- Starter content packs mix curated words, fun words, and difficulty tags.
 - Local mock data for multiple groups, friends, scores, and weekly totals.
 - Persisted local state for selected group, finished games, and reminder settings.
 - Spoiler-safe daily leaderboards: friend scores are hidden until you finish that game.

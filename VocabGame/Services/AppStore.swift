@@ -31,7 +31,7 @@ final class AppStore {
   private(set) var reminderStatus: ReminderPermissionStatus = .unknown
   private(set) var reminderMessage = "Daily reminder is off."
 
-  let today = SampleData.today
+  let today: GameDay
   let groups = SampleData.groups
   let currentUser = SampleData.currentUser
 
@@ -45,9 +45,12 @@ final class AppStore {
   @ObservationIgnored private var isHydrated = false
 
   init(
+    todayDate: Date = Date(),
+    contentService: DailyContentService = .live,
     persistence: AppPersistence = .live,
     reminderScheduler: ReminderNotificationScheduler = ReminderNotificationScheduler()
   ) {
+    self.today = contentService.gameDay(todayDate)
     self.persistence = persistence
     self.reminderScheduler = reminderScheduler
 
@@ -55,7 +58,7 @@ final class AppStore {
       selectedGroupID = groups.contains { $0.id == snapshot.selectedGroupID }
         ? snapshot.selectedGroupID
         : groups[0].id
-      completedGames = snapshot.completedGames
+      completedGames = Self.currentDayCompletions(from: snapshot.completedGames, dateKey: today.dateKey)
       notificationsEnabled = snapshot.notificationsEnabled
       preferredReminderHour = snapshot.preferredReminderHour
     }
@@ -68,7 +71,7 @@ final class AppStore {
   }
 
   var completedTodayCount: Int {
-    today.games.filter { completedGames[$0.id] != nil }.count
+    today.games.filter { completion(for: $0) != nil }.count
   }
 
   var allTodayGamesCompleted: Bool {
@@ -77,7 +80,7 @@ final class AppStore {
 
   var totalScoreToday: Int {
     today.games.reduce(0) { total, game in
-      total + (completedGames[game.id]?.score ?? 0)
+      total + (completion(for: game)?.score ?? 0)
     }
   }
 
@@ -89,6 +92,10 @@ final class AppStore {
   }
 
   func completion(for game: DailyGame) -> GameCompletion? {
+    // Look up only by the date-scoped game id. `completedGames` stores the local
+    // player's own results, always keyed by `game.id`, so completions reset per day.
+    // Falling back to the stable `scoreKey` here would match stale entries from an
+    // earlier build and make a game read as completed every day forever.
     completedGames[game.id]
   }
 
@@ -116,7 +123,7 @@ final class AppStore {
         score = totalScoreToday
       } else {
         score = today.games.reduce(0) { total, game in
-          total + (player.dailyScores[game.id] ?? 0)
+          total + (player.dailyScores[game.kind.scoreKey] ?? 0)
         }
       }
 
@@ -159,6 +166,7 @@ final class AppStore {
       }
 
       let score = player.dailyScores[game.id]
+        ?? player.dailyScores[game.kind.scoreKey]
       return LeaderboardRow(
         id: player.id,
         rank: nil,
@@ -190,7 +198,8 @@ final class AppStore {
     let rows = selectedGroup.members.map { player in
       let baseScore: Int
       if let gameID {
-        baseScore = player.weeklyScores[gameID] ?? 0
+        let scoreKey = today.games.first { $0.id == gameID }?.kind.scoreKey ?? gameID
+        baseScore = player.weeklyScores[scoreKey] ?? 0
       } else {
         baseScore = player.weeklyScores.values.reduce(0, +)
       }
@@ -234,6 +243,16 @@ final class AppStore {
       notificationsEnabled: notificationsEnabled,
       preferredReminderHour: preferredReminderHour
     ))
+  }
+
+  private static func currentDayCompletions(
+    from completions: [String: GameCompletion],
+    dateKey: String
+  ) -> [String: GameCompletion] {
+    let currentDayPrefix = "\(dateKey)-"
+    return completions.filter { key, completion in
+      key.hasPrefix(currentDayPrefix) && completion.gameID == key
+    }
   }
 
   private func syncReminder() async {

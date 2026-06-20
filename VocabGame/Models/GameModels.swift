@@ -4,6 +4,16 @@ struct GameDay: Identifiable, Hashable {
   var id: String { dateKey }
   let date: Date
   let dateKey: String
+  let packID: String
+  let packTitle: String
+  let packTheme: String
+  let games: [DailyGame]
+}
+
+struct DailyContentPack: Identifiable, Hashable {
+  let id: String
+  let title: String
+  let theme: String
   let games: [DailyGame]
 }
 
@@ -20,15 +30,36 @@ enum DailyGameKind: String, Hashable {
   case vocabSprint = "Vocab Sprint"
   case wordInTheWild = "Word in the Wild"
   case oddOneOut = "Odd One Out"
+
+  var scoreKey: String {
+    switch self {
+    case .vocabSprint: "vocab-sprint"
+    case .wordInTheWild: "word-wild"
+    case .oddOneOut: "odd-one-out"
+    }
+  }
 }
 
 struct VocabQuestion: Identifiable, Hashable {
   let id: String
   let prompt: String
   let detail: String
+  var difficulty: WordDifficulty = .medium
+  var flavor: WordFlavor = .curated
   let choices: [VocabChoice]
   let correctChoiceID: String
   let explanation: String
+}
+
+enum WordDifficulty: String, Hashable {
+  case easy = "Easy"
+  case medium = "Medium"
+  case hard = "Hard"
+}
+
+enum WordFlavor: String, Hashable {
+  case curated = "Curated"
+  case fun = "Fun"
 }
 
 struct VocabChoice: Identifiable, Hashable {
