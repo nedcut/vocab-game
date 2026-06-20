@@ -92,7 +92,11 @@ final class AppStore {
   }
 
   func completion(for game: DailyGame) -> GameCompletion? {
-    completedGames[game.id] ?? completedGames[game.kind.scoreKey]
+    // Look up only by the date-scoped game id. `completedGames` stores the local
+    // player's own results, always keyed by `game.id`, so completions reset per day.
+    // Falling back to the stable `scoreKey` here would match stale entries from an
+    // earlier build and make a game read as completed every day forever.
+    completedGames[game.id]
   }
 
   func complete(game: DailyGame, correct: Int, total: Int, bestStreak: Int) {
