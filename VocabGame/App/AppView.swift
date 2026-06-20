@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct AppView: View {
+  @Environment(AppStore.self) private var store
   @State private var selectedTab: AppTab = .today
 
   var body: some View {
@@ -28,6 +29,9 @@ struct AppView: View {
       }
       .tabItem { Label("Profile", systemImage: "person.crop.circle.fill") }
       .tag(AppTab.profile)
+    }
+    .task {
+      await store.prepareForLaunch()
     }
   }
 }

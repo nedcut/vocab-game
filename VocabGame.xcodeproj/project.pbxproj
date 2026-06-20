@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03042E8CFB031CD260F1743B /* ReminderNotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C377147E1552B0483DD6F1 /* ReminderNotificationScheduler.swift */; };
+		1452A09BDA4A299867A05BD2 /* AppPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA98895F9B85F7A01BC9D02 /* AppPersistence.swift */; };
 		19D4DAFEB49C537159016B5D /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC08289306917BCFA6C3FC75 /* ProfileView.swift */; };
 		28DDEC178F2703CFA3F9493F /* ScoringRuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B292CD117E49D7A7F993CE4 /* ScoringRuleTests.swift */; };
 		3849802C8D76ABB6CCDF4112 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E4F0CC08DAF55144EEA75C /* AppStore.swift */; };
@@ -42,10 +44,12 @@
 		7F6B3DB998A363E123F46BAF /* VocabGameTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = VocabGameTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1004C0B2D32D68883DF53C4 /* VocabGameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabGameApp.swift; sourceTree = "<group>"; };
 		BC08289306917BCFA6C3FC75 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		BCA98895F9B85F7A01BC9D02 /* AppPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPersistence.swift; sourceTree = "<group>"; };
 		C40F3962634668BF0F3D1786 /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
 		C5D98164E2380DDB3E8AD12C /* GameModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModels.swift; sourceTree = "<group>"; };
 		E8D4FFA0F074215EAFBE6BA6 /* MultipleChoiceGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipleChoiceGameView.swift; sourceTree = "<group>"; };
 		EEFC21903CB485167A0A70A6 /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
+		F7C377147E1552B0483DD6F1 /* ReminderNotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderNotificationScheduler.swift; sourceTree = "<group>"; };
 		F8E4F0CC08DAF55144EEA75C /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
 		FFE1FA6F9FD0B2C6038ABAEB /* LeaderboardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -92,7 +96,9 @@
 		63A8AEB3AEE450AADB704A52 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				BCA98895F9B85F7A01BC9D02 /* AppPersistence.swift */,
 				F8E4F0CC08DAF55144EEA75C /* AppStore.swift */,
+				F7C377147E1552B0483DD6F1 /* ReminderNotificationScheduler.swift */,
 				70F9806324D5857261EB3325 /* SampleData.swift */,
 			);
 			path = Services;
@@ -250,6 +256,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1452A09BDA4A299867A05BD2 /* AppPersistence.swift in Sources */,
 				3849802C8D76ABB6CCDF4112 /* AppStore.swift in Sources */,
 				43F7B6E7D1AEB3F678CEAE11 /* AppTheme.swift in Sources */,
 				98ABE8AAE73AF94849CFB9AD /* AppView.swift in Sources */,
@@ -259,6 +266,7 @@
 				5BCB50DB4A461D3214C6E641 /* LeaderboardsView.swift in Sources */,
 				E513E1A2CBAAF627B63153D9 /* MultipleChoiceGameView.swift in Sources */,
 				19D4DAFEB49C537159016B5D /* ProfileView.swift in Sources */,
+				03042E8CFB031CD260F1743B /* ReminderNotificationScheduler.swift in Sources */,
 				DD5E2379D68E50C38317421D /* SampleData.swift in Sources */,
 				CEFEB36C05E655D565D8F290 /* TodayView.swift in Sources */,
 				8A7862120BB14094A6DA3C9D /* VocabGameApp.swift in Sources */,

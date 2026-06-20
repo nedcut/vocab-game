@@ -131,6 +131,13 @@ struct MultipleChoiceGameView: View {
         }
         .panel()
 
+        ShareLink(item: resultShareText(score: finalScore, correct: finalCorrect)) {
+          Label("Share result", systemImage: "square.and.arrow.up")
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.large)
+
         LeaderboardList(
           title: "Today",
           rows: store.dailyLeaderboard(for: game),
@@ -159,6 +166,10 @@ struct MultipleChoiceGameView: View {
 
     currentIndex += 1
     selectedChoiceID = answers[currentQuestion.id]
+  }
+
+  private func resultShareText(score: Int, correct: Int) -> String {
+    "\(game.title): \(score) points, \(correct)/\(game.questions.count) correct in \(store.selectedGroup.name)."
   }
 }
 

@@ -44,12 +44,22 @@ struct LeaderboardsView: View {
     switch scope {
     case .daily:
       if selectedGameID == "aggregate" {
-        VStack(alignment: .leading, spacing: 10) {
-          Text("Daily aggregate unlocks after every game is finished.")
-            .font(.subheadline)
-            .foregroundStyle(AppTheme.quietInk)
+        if let rows = store.dailyAggregateLeaderboard() {
+          LeaderboardList(
+            title: "Daily aggregate",
+            rows: rows,
+            hidesScoresUntilPlayed: false
+          )
+        } else {
+          VStack(alignment: .leading, spacing: 10) {
+            Text("Daily aggregate unlocks after every game is finished.")
+              .font(.headline)
+            Text("\(store.completedTodayCount) of \(store.today.games.count) games complete.")
+              .font(.subheadline)
+              .foregroundStyle(AppTheme.quietInk)
+          }
+          .panel()
         }
-        .panel()
       } else if let game = store.today.games.first(where: { $0.id == selectedGameID }) {
         LeaderboardList(
           title: game.title,
