@@ -14,6 +14,31 @@ final class ScoringRuleTests: XCTestCase {
     XCTAssertEqual(rule.score(correct: 2, total: 3), 700)
   }
 
+  func testStreakBonusRewardsBestRunAfterFirstWord() {
+    let rule = ScoringRule(maxPoints: 900, completionBonus: 100, perfectBonus: 250)
+
+    let breakdown = rule.breakdown(correct: 2, total: 3, bestStreak: 2)
+
+    XCTAssertEqual(breakdown.accuracyPoints, 600)
+    XCTAssertEqual(breakdown.completionBonus, 100)
+    XCTAssertEqual(breakdown.streakBonus, 20)
+    XCTAssertEqual(breakdown.total, 720)
+  }
+
+  func testMaxScoreIncludesPerfectStreakBonus() {
+    let rule = ScoringRule(maxPoints: 900, completionBonus: 100, perfectBonus: 250)
+
+    XCTAssertEqual(rule.maxScore(questionCount: 3), 1_290)
+  }
+
+  func testStreakBonusIsCappedByCorrectAnswers() {
+    let rule = ScoringRule(maxPoints: 900, completionBonus: 100, perfectBonus: 250)
+
+    let breakdown = rule.breakdown(correct: 1, total: 3, bestStreak: 3)
+
+    XCTAssertEqual(breakdown.streakBonus, 0)
+  }
+
   func testZeroCorrectEarnsZero() {
     let rule = ScoringRule(maxPoints: 900, completionBonus: 100, perfectBonus: 250)
 
@@ -26,6 +51,13 @@ final class ScoringRuleTests: XCTestCase {
       score: 1250,
       correct: 3,
       total: 3,
+      bestStreak: 3,
+      scoreBreakdown: ScoreBreakdown(
+        accuracyPoints: 900,
+        completionBonus: 100,
+        perfectBonus: 250,
+        streakBonus: 40
+      ),
       completedAt: Date(timeIntervalSince1970: 1_800_000_000)
     )
     let snapshot = AppSnapshot(
@@ -39,5 +71,24 @@ final class ScoringRuleTests: XCTestCase {
     let decoded = try JSONDecoder().decode(AppSnapshot.self, from: data)
 
     XCTAssertEqual(decoded, snapshot)
+  }
+
+  func testLegacyGameCompletionDecodesWithoutStreakMetadata() throws {
+    let json = """
+      {
+        "gameID": "vocab-sprint",
+        "score": 1250,
+        "correct": 3,
+        "total": 3,
+        "completedAt": 1800000000
+      }
+      """
+    let data = try XCTUnwrap(json.data(using: .utf8))
+
+    let completion = try JSONDecoder().decode(GameCompletion.self, from: data)
+
+    XCTAssertEqual(completion.gameID, "vocab-sprint")
+    XCTAssertEqual(completion.bestStreak, 0)
+    XCTAssertNil(completion.scoreBreakdown)
   }
 }

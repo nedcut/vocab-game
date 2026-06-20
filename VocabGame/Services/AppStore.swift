@@ -92,13 +92,15 @@ final class AppStore {
     completedGames[game.id]
   }
 
-  func complete(game: DailyGame, correct: Int, total: Int) {
-    let score = game.scoring.score(correct: correct, total: total)
+  func complete(game: DailyGame, correct: Int, total: Int, bestStreak: Int) {
+    let breakdown = game.scoring.breakdown(correct: correct, total: total, bestStreak: bestStreak)
     completedGames[game.id] = GameCompletion(
       gameID: game.id,
-      score: score,
+      score: breakdown.total,
       correct: correct,
       total: total,
+      bestStreak: bestStreak,
+      scoreBreakdown: breakdown,
       completedAt: Date()
     )
   }

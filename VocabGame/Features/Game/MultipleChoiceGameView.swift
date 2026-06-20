@@ -21,6 +21,38 @@ struct MultipleChoiceGameView: View {
     }
   }
 
+  private var answeredCount: Int {
+    answers.count
+  }
+
+  private var currentStreak: Int {
+    var streak = 0
+    for question in game.questions {
+      guard let answer = answers[question.id] else { break }
+      if answer == question.correctChoiceID {
+        streak += 1
+      } else {
+        streak = 0
+      }
+    }
+    return streak
+  }
+
+  private var bestStreak: Int {
+    var current = 0
+    var best = 0
+    for question in game.questions {
+      guard let answer = answers[question.id] else { break }
+      if answer == question.correctChoiceID {
+        current += 1
+        best = max(best, current)
+      } else {
+        current = 0
+      }
+    }
+    return best
+  }
+
   var body: some View {
     VStack(spacing: 0) {
       if didFinish || store.completion(for: game) != nil {
@@ -71,7 +103,7 @@ struct MultipleChoiceGameView: View {
       Button {
         advance()
       } label: {
-        Label(currentIndex == game.questions.count - 1 ? "Finish" : "Next", systemImage: "arrow.right.circle.fill")
+        Label(currentIndex == game.questions.count - 1 ? "Post score" : "Next", systemImage: "arrow.right.circle.fill")
           .frame(maxWidth: .infinity)
       }
       .buttonStyle(.borderedProminent)
@@ -87,13 +119,18 @@ struct MultipleChoiceGameView: View {
         Text("Round \(currentIndex + 1) of \(game.questions.count)")
           .font(.subheadline.weight(.semibold))
         Spacer()
-        Text("\(correctCount) correct")
+        Text("\(correctCount)/\(answeredCount) correct")
           .font(.subheadline.weight(.semibold))
           .foregroundStyle(AppTheme.quietInk)
       }
 
-      ProgressView(value: Double(currentIndex), total: Double(game.questions.count))
+      ProgressView(value: Double(answeredCount), total: Double(game.questions.count))
         .tint(AppTheme.mint)
+
+      HStack(spacing: 8) {
+        MiniStat(text: "\(currentStreak) now", systemImage: "flame.fill", color: AppTheme.coral)
+        MiniStat(text: "\(bestStreak) best", systemImage: "bolt.fill", color: AppTheme.gold)
+      }
     }
   }
 
@@ -108,6 +145,11 @@ struct MultipleChoiceGameView: View {
         .font(.subheadline)
         .foregroundStyle(AppTheme.quietInk)
         .fixedSize(horizontal: false, vertical: true)
+      if isCorrect && currentStreak > 1 && currentStreak == bestStreak {
+        Text("+\(game.scoring.streakBonusPerWordInBestRun) streak bonus points")
+          .font(.caption.weight(.semibold))
+          .foregroundStyle(AppTheme.gold)
+      }
     }
     .panel()
   }
@@ -115,12 +157,15 @@ struct MultipleChoiceGameView: View {
   private var completionView: some View {
     let completion = store.completion(for: game)
     let finalCorrect = completion?.correct ?? correctCount
-    let finalScore = completion?.score ?? game.scoring.score(correct: finalCorrect, total: game.questions.count)
+    let finalBestStreak = completion?.bestStreak ?? bestStreak
+    let breakdown = completion?.scoreBreakdown
+      ?? game.scoring.breakdown(correct: finalCorrect, total: game.questions.count, bestStreak: finalBestStreak)
+    let finalScore = completion?.score ?? breakdown.total
 
     return ScrollView {
       VStack(alignment: .leading, spacing: 18) {
         VStack(alignment: .leading, spacing: 8) {
-          Text("Score posted")
+          Text(resultTitle(correct: finalCorrect, total: game.questions.count))
             .font(.largeTitle.weight(.bold))
           Text("\(finalScore) points")
             .font(.title2.weight(.semibold))
@@ -131,7 +176,19 @@ struct MultipleChoiceGameView: View {
         }
         .panel()
 
-        ShareLink(item: resultShareText(score: finalScore, correct: finalCorrect)) {
+        VStack(alignment: .leading, spacing: 12) {
+          Text("Score breakdown")
+            .font(.headline)
+          ScoreBreakdownRow(label: "Accuracy", value: breakdown.accuracyPoints, systemImage: "target")
+          ScoreBreakdownRow(label: "Completion", value: breakdown.completionBonus, systemImage: "checkmark.seal.fill")
+          ScoreBreakdownRow(label: "Best streak: \(finalBestStreak)", value: breakdown.streakBonus, systemImage: "flame.fill")
+          if breakdown.perfectBonus > 0 {
+            ScoreBreakdownRow(label: "Perfect bonus", value: breakdown.perfectBonus, systemImage: "sparkles")
+          }
+        }
+        .panel()
+
+        ShareLink(item: resultShareText(score: finalScore, correct: finalCorrect, bestStreak: finalBestStreak)) {
           Label("Share result", systemImage: "square.and.arrow.up")
             .frame(maxWidth: .infinity)
         }
@@ -159,7 +216,7 @@ struct MultipleChoiceGameView: View {
 
   private func advance() {
     if currentIndex == game.questions.count - 1 {
-      store.complete(game: game, correct: correctCount, total: game.questions.count)
+      store.complete(game: game, correct: correctCount, total: game.questions.count, bestStreak: bestStreak)
       didFinish = true
       return
     }
@@ -168,8 +225,53 @@ struct MultipleChoiceGameView: View {
     selectedChoiceID = answers[currentQuestion.id]
   }
 
-  private func resultShareText(score: Int, correct: Int) -> String {
-    "\(game.title): \(score) points, \(correct)/\(game.questions.count) correct in \(store.selectedGroup.name)."
+  private func resultShareText(score: Int, correct: Int, bestStreak: Int) -> String {
+    "\(game.title): \(score) points, \(correct)/\(game.questions.count) correct, best streak \(bestStreak) in \(store.selectedGroup.name)."
+  }
+
+  private func resultTitle(correct: Int, total: Int) -> String {
+    if correct == total {
+      return "Perfect run"
+    }
+    if correct * 2 >= total {
+      return "Score posted"
+    }
+    return "Room to rally"
+  }
+}
+
+private struct MiniStat: View {
+  let text: String
+  let systemImage: String
+  let color: Color
+
+  var body: some View {
+    Label(text, systemImage: systemImage)
+      .font(.caption.weight(.bold))
+      .padding(.horizontal, 8)
+      .padding(.vertical, 5)
+      .foregroundStyle(color)
+      .background(color.opacity(0.12), in: Capsule())
+  }
+}
+
+private struct ScoreBreakdownRow: View {
+  let label: String
+  let value: Int
+  let systemImage: String
+
+  var body: some View {
+    HStack(spacing: 10) {
+      Image(systemName: systemImage)
+        .foregroundStyle(AppTheme.mint)
+        .frame(width: 22)
+      Text(label)
+        .font(.subheadline.weight(.semibold))
+      Spacer()
+      Text("+\(value)")
+        .font(.subheadline.monospacedDigit().weight(.bold))
+        .foregroundStyle(value == 0 ? AppTheme.quietInk : AppTheme.ink)
+    }
   }
 }
 
