@@ -12,6 +12,20 @@ final class AppStore {
     didSet { persistIfHydrated() }
   }
 
+  var joinedGroups: [FriendGroup] = [] {
+    didSet {
+      guard isHydrated else { return }
+      if !groups.contains(where: { $0.id == selectedGroupID }) {
+        selectedGroupID = groups[0].id
+      }
+      persist()
+    }
+  }
+
+  var hasCompletedOnboarding = false {
+    didSet { persistIfHydrated() }
+  }
+
   var notificationsEnabled = false {
     didSet {
       guard isHydrated else { return }
@@ -32,7 +46,6 @@ final class AppStore {
   private(set) var reminderMessage = "Daily reminder is off."
 
   let today: GameDay
-  let groups = SampleData.groups
   let currentUser = SampleData.currentUser
 
   private let persistence: AppPersistence
@@ -55,15 +68,21 @@ final class AppStore {
     self.reminderScheduler = reminderScheduler
 
     if let snapshot = persistence.load() {
+      joinedGroups = snapshot.joinedGroups
       selectedGroupID = groups.contains { $0.id == snapshot.selectedGroupID }
         ? snapshot.selectedGroupID
         : groups[0].id
       completedGames = Self.currentDayCompletions(from: snapshot.completedGames, dateKey: today.dateKey)
+      hasCompletedOnboarding = snapshot.hasCompletedOnboarding
       notificationsEnabled = snapshot.notificationsEnabled
       preferredReminderHour = snapshot.preferredReminderHour
     }
 
     isHydrated = true
+  }
+
+  var groups: [FriendGroup] {
+    SampleData.groups + joinedGroups
   }
 
   var selectedGroup: FriendGroup {
@@ -110,6 +129,51 @@ final class AppStore {
       scoreBreakdown: breakdown,
       completedAt: Date()
     )
+  }
+
+  func createLocalGroup(named name: String) {
+    let cleanName = sanitizedName(name, fallback: "My group")
+    let slug = cleanName
+      .lowercased()
+      .filter { $0.isLetter || $0.isNumber }
+    let id = "local-\(slug.isEmpty ? "group" : slug)"
+    let uniqueID = uniqueGroupID(base: id)
+    let code = inviteCode(for: cleanName, uniqueID: uniqueID)
+    let group = FriendGroup(
+      id: uniqueID,
+      name: cleanName,
+      inviteCode: code,
+      members: [currentUser]
+    )
+
+    joinedGroups.append(group)
+    selectedGroupID = group.id
+  }
+
+  func joinGroup(inviteCode: String) {
+    let cleanCode = inviteCode
+      .trimmingCharacters(in: .whitespacesAndNewlines)
+      .uppercased()
+    guard !cleanCode.isEmpty else { return }
+
+    if let existingGroup = groups.first(where: { $0.inviteCode.uppercased() == cleanCode }) {
+      selectedGroupID = existingGroup.id
+      return
+    }
+
+    let group = FriendGroup(
+      id: uniqueGroupID(base: "joined-\(cleanCode.lowercased())"),
+      name: "Joined \(cleanCode)",
+      inviteCode: cleanCode,
+      members: [currentUser]
+    )
+    joinedGroups.append(group)
+    selectedGroupID = group.id
+  }
+
+  func completeOnboarding(enableReminders: Bool) {
+    hasCompletedOnboarding = true
+    notificationsEnabled = enableReminders
   }
 
   func dailyAggregateLeaderboard() -> [LeaderboardRow]? {
@@ -239,7 +303,9 @@ final class AppStore {
   private func persist() {
     persistence.save(AppSnapshot(
       selectedGroupID: selectedGroupID,
+      joinedGroups: joinedGroups,
       completedGames: completedGames,
+      hasCompletedOnboarding: hasCompletedOnboarding,
       notificationsEnabled: notificationsEnabled,
       preferredReminderHour: preferredReminderHour
     ))
@@ -259,5 +325,30 @@ final class AppStore {
     let result = await reminderScheduler.sync(enabled: notificationsEnabled, hour: preferredReminderHour)
     reminderStatus = result.status
     reminderMessage = result.message
+  }
+
+  private func sanitizedName(_ name: String, fallback: String) -> String {
+    let cleanName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+    return cleanName.isEmpty ? fallback : cleanName
+  }
+
+  private func uniqueGroupID(base: String) -> String {
+    guard groups.contains(where: { $0.id == base }) else { return base }
+
+    var suffix = 2
+    while groups.contains(where: { $0.id == "\(base)-\(suffix)" }) {
+      suffix += 1
+    }
+    return "\(base)-\(suffix)"
+  }
+
+  private func inviteCode(for name: String, uniqueID: String) -> String {
+    let letters = name
+      .uppercased()
+      .filter(\.isLetter)
+      .prefix(3)
+    let prefix = letters.isEmpty ? "VOC" : String(letters).padding(toLength: 3, withPad: "X", startingAt: 0)
+    let digits = abs(uniqueID.hashValue) % 900 + 100
+    return "\(prefix)-\(digits)"
   }
 }

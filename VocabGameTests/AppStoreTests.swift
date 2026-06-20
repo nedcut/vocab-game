@@ -49,6 +49,31 @@ final class AppStoreTests: XCTestCase {
     XCTAssertEqual(store.completedTodayCount, 1)
   }
 
+  func testCreateLocalGroupSelectsAndPersistsJoinedGroup() throws {
+    var savedSnapshot: AppSnapshot?
+    let store = AppStore(
+      persistence: AppPersistence(load: { nil }, save: { savedSnapshot = $0 })
+    )
+
+    store.createLocalGroup(named: "Book Club")
+
+    XCTAssertEqual(store.selectedGroup.name, "Book Club")
+    XCTAssertEqual(store.joinedGroups.map(\.name), ["Book Club"])
+    XCTAssertEqual(savedSnapshot?.joinedGroups.map(\.name), ["Book Club"])
+    XCTAssertEqual(savedSnapshot?.selectedGroupID, store.selectedGroupID)
+  }
+
+  func testJoinKnownInviteCodeSelectsExistingGroup() {
+    let store = AppStore(
+      persistence: AppPersistence(load: { nil }, save: { _ in })
+    )
+
+    store.joinGroup(inviteCode: "FAM-482")
+
+    XCTAssertEqual(store.selectedGroupID, "family")
+    XCTAssertTrue(store.joinedGroups.isEmpty)
+  }
+
   private func makeDate(year: Int, month: Int, day: Int) throws -> Date {
     var calendar = Calendar(identifier: .gregorian)
     calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
