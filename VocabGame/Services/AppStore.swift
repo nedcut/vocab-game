@@ -31,7 +31,7 @@ final class AppStore {
   private(set) var reminderStatus: ReminderPermissionStatus = .unknown
   private(set) var reminderMessage = "Daily reminder is off."
 
-  let today = SampleData.today
+  let today: GameDay
   let groups = SampleData.groups
   let currentUser = SampleData.currentUser
 
@@ -45,9 +45,12 @@ final class AppStore {
   @ObservationIgnored private var isHydrated = false
 
   init(
+    todayDate: Date = Date(),
+    contentService: DailyContentService = .live,
     persistence: AppPersistence = .live,
     reminderScheduler: ReminderNotificationScheduler = ReminderNotificationScheduler()
   ) {
+    self.today = contentService.gameDay(todayDate)
     self.persistence = persistence
     self.reminderScheduler = reminderScheduler
 
@@ -68,7 +71,7 @@ final class AppStore {
   }
 
   var completedTodayCount: Int {
-    today.games.filter { completedGames[$0.id] != nil }.count
+    today.games.filter { completion(for: $0) != nil }.count
   }
 
   var allTodayGamesCompleted: Bool {
@@ -77,7 +80,7 @@ final class AppStore {
 
   var totalScoreToday: Int {
     today.games.reduce(0) { total, game in
-      total + (completedGames[game.id]?.score ?? 0)
+      total + (completion(for: game)?.score ?? 0)
     }
   }
 
@@ -89,7 +92,7 @@ final class AppStore {
   }
 
   func completion(for game: DailyGame) -> GameCompletion? {
-    completedGames[game.id]
+    completedGames[game.id] ?? completedGames[game.kind.scoreKey]
   }
 
   func complete(game: DailyGame, correct: Int, total: Int, bestStreak: Int) {
@@ -116,7 +119,7 @@ final class AppStore {
         score = totalScoreToday
       } else {
         score = today.games.reduce(0) { total, game in
-          total + (player.dailyScores[game.id] ?? 0)
+          total + (player.dailyScores[game.kind.scoreKey] ?? 0)
         }
       }
 
@@ -159,6 +162,7 @@ final class AppStore {
       }
 
       let score = player.dailyScores[game.id]
+        ?? player.dailyScores[game.kind.scoreKey]
       return LeaderboardRow(
         id: player.id,
         rank: nil,
@@ -190,7 +194,8 @@ final class AppStore {
     let rows = selectedGroup.members.map { player in
       let baseScore: Int
       if let gameID {
-        baseScore = player.weeklyScores[gameID] ?? 0
+        let scoreKey = today.games.first { $0.id == gameID }?.kind.scoreKey ?? gameID
+        baseScore = player.weeklyScores[scoreKey] ?? 0
       } else {
         baseScore = player.weeklyScores.values.reduce(0, +)
       }

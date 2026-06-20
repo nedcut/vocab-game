@@ -33,7 +33,10 @@ struct TodayView: View {
     VStack(alignment: .leading, spacing: 8) {
       Text("Daily words")
         .font(.largeTitle.weight(.bold))
-      Text("Everyone in \(store.selectedGroup.name) gets the same set. Scores stay hidden until you finish each game.")
+      Text(store.today.packTitle)
+        .font(.headline)
+        .foregroundStyle(AppTheme.mint)
+      Text("\(store.today.packTheme) Everyone in \(store.selectedGroup.name) gets the same set. Scores stay hidden until you finish each game.")
         .font(.subheadline)
         .foregroundStyle(AppTheme.quietInk)
         .fixedSize(horizontal: false, vertical: true)

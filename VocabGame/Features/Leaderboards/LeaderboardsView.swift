@@ -3,7 +3,7 @@ import SwiftUI
 struct LeaderboardsView: View {
   @Environment(AppStore.self) private var store
   @State private var scope: LeaderboardScope = .daily
-  @State private var selectedGameID = SampleData.today.games[0].id
+  @State private var selectedGameID = "aggregate"
 
   var body: some View {
     ScrollView {

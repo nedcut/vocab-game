@@ -71,6 +71,10 @@ struct MultipleChoiceGameView: View {
       progressHeader
 
       VStack(alignment: .leading, spacing: 10) {
+        HStack(spacing: 8) {
+          QuestionTag(text: currentQuestion.difficulty.rawValue, systemImage: "gauge.with.dots.needle.bottom.50percent")
+          QuestionTag(text: currentQuestion.flavor.rawValue, systemImage: currentQuestion.flavor == .fun ? "sparkles" : "checkmark.seal.fill")
+        }
         Text(currentQuestion.prompt)
           .font(.title.weight(.bold))
           .fixedSize(horizontal: false, vertical: true)
@@ -252,6 +256,20 @@ private struct MiniStat: View {
       .padding(.vertical, 5)
       .foregroundStyle(color)
       .background(color.opacity(0.12), in: Capsule())
+  }
+}
+
+private struct QuestionTag: View {
+  let text: String
+  let systemImage: String
+
+  var body: some View {
+    Label(text, systemImage: systemImage)
+      .font(.caption.weight(.bold))
+      .padding(.horizontal, 8)
+      .padding(.vertical, 5)
+      .foregroundStyle(AppTheme.quietInk)
+      .background(Color(.tertiarySystemGroupedBackground), in: Capsule())
   }
 }
 
