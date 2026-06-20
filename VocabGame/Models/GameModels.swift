@@ -40,13 +40,42 @@ struct ScoringRule: Hashable {
   let maxPoints: Int
   let completionBonus: Int
   let perfectBonus: Int
+  var streakBonusPerWordInBestRun = 20
 
-  func score(correct: Int, total: Int) -> Int {
-    guard total > 0 else { return 0 }
+  func score(correct: Int, total: Int, bestStreak: Int = 0) -> Int {
+    breakdown(correct: correct, total: total, bestStreak: bestStreak).total
+  }
+
+  func breakdown(correct: Int, total: Int, bestStreak: Int = 0) -> ScoreBreakdown {
+    guard total > 0 else {
+      return ScoreBreakdown(accuracyPoints: 0, completionBonus: 0, perfectBonus: 0, streakBonus: 0)
+    }
     let accuracyPoints = Int((Double(correct) / Double(total)) * Double(maxPoints))
     let earnedCompletionBonus = correct > 0 ? completionBonus : 0
     let earnedPerfectBonus = correct == total ? perfectBonus : 0
-    return accuracyPoints + earnedCompletionBonus + earnedPerfectBonus
+    let clampedBestStreak = min(bestStreak, correct, total)
+    let earnedStreakBonus = max(0, clampedBestStreak - 1) * streakBonusPerWordInBestRun
+    return ScoreBreakdown(
+      accuracyPoints: accuracyPoints,
+      completionBonus: earnedCompletionBonus,
+      perfectBonus: earnedPerfectBonus,
+      streakBonus: earnedStreakBonus
+    )
+  }
+
+  func maxScore(questionCount: Int) -> Int {
+    score(correct: questionCount, total: questionCount, bestStreak: questionCount)
+  }
+}
+
+struct ScoreBreakdown: Hashable, Codable {
+  let accuracyPoints: Int
+  let completionBonus: Int
+  let perfectBonus: Int
+  let streakBonus: Int
+
+  var total: Int {
+    accuracyPoints + completionBonus + perfectBonus + streakBonus
   }
 }
 
@@ -56,7 +85,59 @@ struct GameCompletion: Identifiable, Hashable, Codable {
   let score: Int
   let correct: Int
   let total: Int
+  let bestStreak: Int
+  let scoreBreakdown: ScoreBreakdown?
   let completedAt: Date
+
+  init(
+    gameID: String,
+    score: Int,
+    correct: Int,
+    total: Int,
+    bestStreak: Int = 0,
+    scoreBreakdown: ScoreBreakdown? = nil,
+    completedAt: Date
+  ) {
+    self.gameID = gameID
+    self.score = score
+    self.correct = correct
+    self.total = total
+    self.bestStreak = bestStreak
+    self.scoreBreakdown = scoreBreakdown
+    self.completedAt = completedAt
+  }
+
+  private enum CodingKeys: String, CodingKey {
+    case gameID
+    case score
+    case correct
+    case total
+    case bestStreak
+    case scoreBreakdown
+    case completedAt
+  }
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    gameID = try container.decode(String.self, forKey: .gameID)
+    score = try container.decode(Int.self, forKey: .score)
+    correct = try container.decode(Int.self, forKey: .correct)
+    total = try container.decode(Int.self, forKey: .total)
+    bestStreak = try container.decodeIfPresent(Int.self, forKey: .bestStreak) ?? 0
+    scoreBreakdown = try container.decodeIfPresent(ScoreBreakdown.self, forKey: .scoreBreakdown)
+    completedAt = try container.decode(Date.self, forKey: .completedAt)
+  }
+
+  func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode(gameID, forKey: .gameID)
+    try container.encode(score, forKey: .score)
+    try container.encode(correct, forKey: .correct)
+    try container.encode(total, forKey: .total)
+    try container.encode(bestStreak, forKey: .bestStreak)
+    try container.encodeIfPresent(scoreBreakdown, forKey: .scoreBreakdown)
+    try container.encode(completedAt, forKey: .completedAt)
+  }
 }
 
 enum ReminderPermissionStatus: String, Hashable, Codable {

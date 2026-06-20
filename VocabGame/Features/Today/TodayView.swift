@@ -95,13 +95,18 @@ private struct DailyGameCard: View {
 
       HStack(spacing: 10) {
         Label("\(game.questions.count) rounds", systemImage: "list.number")
-        Label("\(game.scoring.maxPoints + game.scoring.completionBonus + game.scoring.perfectBonus) max", systemImage: "star.fill")
+        Label("\(game.scoring.maxScore(questionCount: game.questions.count)) max", systemImage: "star.fill")
       }
       .font(.caption.weight(.semibold))
       .foregroundStyle(AppTheme.quietInk)
 
       if let completion {
-        ScorePill(text: "\(completion.score) pts", color: accent)
+        HStack(spacing: 8) {
+          ScorePill(text: "\(completion.score) pts", color: accent)
+          if completion.bestStreak > 1 {
+            ScorePill(text: "\(completion.bestStreak) streak", color: AppTheme.gold)
+          }
+        }
       } else {
         ScorePill(text: "Unplayed", color: accent.opacity(0.75))
       }
