@@ -33,6 +33,20 @@ struct AppView: View {
     .task {
       await store.prepareForLaunch()
     }
+    .sheet(isPresented: onboardingBinding) {
+      OnboardingView()
+    }
+  }
+
+  private var onboardingBinding: Binding<Bool> {
+    Binding(
+      get: { !store.hasCompletedOnboarding },
+      set: { isPresented in
+        if !isPresented {
+          store.hasCompletedOnboarding = true
+        }
+      }
+    )
   }
 }
 

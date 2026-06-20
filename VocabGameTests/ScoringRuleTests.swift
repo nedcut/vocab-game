@@ -73,6 +73,24 @@ final class ScoringRuleTests: XCTestCase {
     XCTAssertEqual(decoded, snapshot)
   }
 
+  func testLegacySnapshotDecodesWithoutOnboardingFields() throws {
+    let json = """
+      {
+        "selectedGroupID": "family",
+        "completedGames": {},
+        "notificationsEnabled": false,
+        "preferredReminderHour": 19
+      }
+      """
+    let data = try XCTUnwrap(json.data(using: .utf8))
+
+    let snapshot = try JSONDecoder().decode(AppSnapshot.self, from: data)
+
+    XCTAssertEqual(snapshot.selectedGroupID, "family")
+    XCTAssertTrue(snapshot.joinedGroups.isEmpty)
+    XCTAssertFalse(snapshot.hasCompletedOnboarding)
+  }
+
   func testLegacyGameCompletionDecodesWithoutStreakMetadata() throws {
     let json = """
       {

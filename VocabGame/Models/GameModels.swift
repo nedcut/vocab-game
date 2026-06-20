@@ -191,14 +191,14 @@ enum ReminderPermissionStatus: String, Hashable, Codable {
   }
 }
 
-struct FriendGroup: Identifiable, Hashable {
+struct FriendGroup: Identifiable, Hashable, Codable {
   let id: String
   let name: String
   let inviteCode: String
   let members: [Player]
 }
 
-struct Player: Identifiable, Hashable {
+struct Player: Identifiable, Hashable, Codable {
   let id: String
   let displayName: String
   let initials: String

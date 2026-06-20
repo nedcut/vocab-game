@@ -14,6 +14,7 @@
 		28DDEC178F2703CFA3F9493F /* ScoringRuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B292CD117E49D7A7F993CE4 /* ScoringRuleTests.swift */; };
 		3849802C8D76ABB6CCDF4112 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E4F0CC08DAF55144EEA75C /* AppStore.swift */; };
 		43F7B6E7D1AEB3F678CEAE11 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EA865C1A04BB8B056E0731A /* AppTheme.swift */; };
+		57B179F31CAE5EA3A4D9B0B2 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061A2A84CEEC3282BDCDC7E7 /* OnboardingView.swift */; };
 		5BCB50DB4A461D3214C6E641 /* LeaderboardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFE1FA6F9FD0B2C6038ABAEB /* LeaderboardsView.swift */; };
 		6AAB10C34A95CDDC82183545 /* AppStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B0A2716217AB70614099CD /* AppStoreTests.swift */; };
 		8A7862120BB14094A6DA3C9D /* VocabGameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1004C0B2D32D68883DF53C4 /* VocabGameApp.swift */; };
@@ -38,6 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		061A2A84CEEC3282BDCDC7E7 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		11B30EDC83F5AAD0F002C45B /* DailyContentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyContentService.swift; sourceTree = "<group>"; };
 		2075FC08CA85D1A6094AAB4C /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
 		52F18F0DB75F1178A1DEC180 /* DailyContentServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyContentServiceTests.swift; sourceTree = "<group>"; };
@@ -99,6 +101,14 @@
 			path = Design;
 			sourceTree = "<group>";
 		};
+		48199DA5ADE13641A69CDA73 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				061A2A84CEEC3282BDCDC7E7 /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		63A8AEB3AEE450AADB704A52 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -152,6 +162,7 @@
 				C2741834C63B17542E0AF7E0 /* Game */,
 				A999A8851AEF79278D88FC75 /* Groups */,
 				DA9BBFFE6F13229E1EEEF3A4 /* Leaderboards */,
+				48199DA5ADE13641A69CDA73 /* Onboarding */,
 				E9EC36F13BED3E0CFFB50EB4 /* Profile */,
 				BFD5C386724678D366D61684 /* Today */,
 			);
@@ -275,6 +286,7 @@
 				F88285FA2005623BDC80F80A /* GroupsView.swift in Sources */,
 				5BCB50DB4A461D3214C6E641 /* LeaderboardsView.swift in Sources */,
 				E513E1A2CBAAF627B63153D9 /* MultipleChoiceGameView.swift in Sources */,
+				57B179F31CAE5EA3A4D9B0B2 /* OnboardingView.swift in Sources */,
 				19D4DAFEB49C537159016B5D /* ProfileView.swift in Sources */,
 				03042E8CFB031CD260F1743B /* ReminderNotificationScheduler.swift in Sources */,
 				DD5E2379D68E50C38317421D /* SampleData.swift in Sources */,
