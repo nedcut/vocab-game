@@ -15,6 +15,7 @@
 		3849802C8D76ABB6CCDF4112 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E4F0CC08DAF55144EEA75C /* AppStore.swift */; };
 		43F7B6E7D1AEB3F678CEAE11 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EA865C1A04BB8B056E0731A /* AppTheme.swift */; };
 		5BCB50DB4A461D3214C6E641 /* LeaderboardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFE1FA6F9FD0B2C6038ABAEB /* LeaderboardsView.swift */; };
+		6AAB10C34A95CDDC82183545 /* AppStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B0A2716217AB70614099CD /* AppStoreTests.swift */; };
 		8A7862120BB14094A6DA3C9D /* VocabGameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1004C0B2D32D68883DF53C4 /* VocabGameApp.swift */; };
 		98ABE8AAE73AF94849CFB9AD /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFC21903CB485167A0A70A6 /* AppView.swift */; };
 		B023294870C528878A813C21 /* DailyContentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B30EDC83F5AAD0F002C45B /* DailyContentService.swift */; };
@@ -47,6 +48,7 @@
 		7EA865C1A04BB8B056E0731A /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		7F6B3DB998A363E123F46BAF /* VocabGameTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = VocabGameTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1004C0B2D32D68883DF53C4 /* VocabGameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabGameApp.swift; sourceTree = "<group>"; };
+		B6B0A2716217AB70614099CD /* AppStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreTests.swift; sourceTree = "<group>"; };
 		BC08289306917BCFA6C3FC75 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		BCA98895F9B85F7A01BC9D02 /* AppPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPersistence.swift; sourceTree = "<group>"; };
 		C40F3962634668BF0F3D1786 /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 		888E68C4103006BA942B3535 /* VocabGameTests */ = {
 			isa = PBXGroup;
 			children = (
+				B6B0A2716217AB70614099CD /* AppStoreTests.swift */,
 				52F18F0DB75F1178A1DEC180 /* DailyContentServiceTests.swift */,
 				5B292CD117E49D7A7F993CE4 /* ScoringRuleTests.swift */,
 			);
@@ -284,6 +287,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6AAB10C34A95CDDC82183545 /* AppStoreTests.swift in Sources */,
 				08F11776DBEDB98B7D53E016 /* DailyContentServiceTests.swift in Sources */,
 				28DDEC178F2703CFA3F9493F /* ScoringRuleTests.swift in Sources */,
 			);

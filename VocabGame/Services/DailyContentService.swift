@@ -44,7 +44,10 @@ struct DailyContentService {
   ) -> DailyContentPack? {
     guard !packs.isEmpty else { return nil }
     let normalizedDate = calendar.startOfDay(for: date)
-    let referenceDate = calendar.date(from: DateComponents(year: 2026, month: 1, day: 1)) ?? normalizedDate
+    guard let referenceDate = calendar.date(from: DateComponents(year: 2026, month: 1, day: 1)) else {
+      assertionFailure("Failed to create daily content reference date.")
+      return packs.first
+    }
     let dayOffset = calendar.dateComponents([.day], from: referenceDate, to: normalizedDate).day ?? 0
     let index = positiveModulo(dayOffset, packs.count)
     return packs[index]

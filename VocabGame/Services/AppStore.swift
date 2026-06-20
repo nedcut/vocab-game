@@ -58,7 +58,7 @@ final class AppStore {
       selectedGroupID = groups.contains { $0.id == snapshot.selectedGroupID }
         ? snapshot.selectedGroupID
         : groups[0].id
-      completedGames = snapshot.completedGames
+      completedGames = Self.currentDayCompletions(from: snapshot.completedGames, dateKey: today.dateKey)
       notificationsEnabled = snapshot.notificationsEnabled
       preferredReminderHour = snapshot.preferredReminderHour
     }
@@ -243,6 +243,16 @@ final class AppStore {
       notificationsEnabled: notificationsEnabled,
       preferredReminderHour: preferredReminderHour
     ))
+  }
+
+  private static func currentDayCompletions(
+    from completions: [String: GameCompletion],
+    dateKey: String
+  ) -> [String: GameCompletion] {
+    let currentDayPrefix = "\(dateKey)-"
+    return completions.filter { key, completion in
+      key.hasPrefix(currentDayPrefix) && completion.gameID == key
+    }
   }
 
   private func syncReminder() async {
