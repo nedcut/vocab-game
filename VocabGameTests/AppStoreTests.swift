@@ -90,6 +90,57 @@ final class AppStoreTests: XCTestCase {
     XCTAssertTrue(store.joinedGroups.isEmpty)
   }
 
+  func testSignInWithApplePersistsAccount() throws {
+    var savedSnapshot: AppSnapshot?
+    let store = AppStore(
+      persistence: AppPersistence(load: { nil }, save: { savedSnapshot = $0 })
+    )
+
+    store.signInWithApple(
+      userID: "apple-user-1",
+      displayName: "Ned",
+      email: "ned@example.com"
+    )
+
+    let account = try XCTUnwrap(store.account)
+    XCTAssertEqual(account.provider, .apple)
+    XCTAssertEqual(account.displayName, "Ned")
+    XCTAssertEqual(account.email, "ned@example.com")
+    XCTAssertEqual(savedSnapshot?.account, account)
+  }
+
+  func testSignOutClearsPersistedAccount() throws {
+    let account = UserAccount(
+      id: "apple-user-1",
+      provider: .apple,
+      displayName: "Ned",
+      email: "ned@example.com",
+      signedInAt: Date(timeIntervalSince1970: 1_800_000_000)
+    )
+    var savedSnapshot: AppSnapshot?
+    let store = AppStore(
+      persistence: AppPersistence(
+        load: {
+          AppSnapshot(
+            selectedGroupID: "family",
+            completedGames: [:],
+            account: account,
+            notificationsEnabled: false,
+            preferredReminderHour: 19
+          )
+        },
+        save: { savedSnapshot = $0 }
+      )
+    )
+
+    XCTAssertNotNil(store.account)
+
+    store.signOut()
+
+    XCTAssertNil(store.account)
+    XCTAssertNil(savedSnapshot?.account)
+  }
+
   private func makeDate(year: Int, month: Int, day: Int) throws -> Date {
     var calendar = Calendar(identifier: .gregorian)
     calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))

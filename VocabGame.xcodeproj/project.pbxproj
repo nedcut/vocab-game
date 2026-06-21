@@ -41,6 +41,7 @@
 /* Begin PBXFileReference section */
 		061A2A84CEEC3282BDCDC7E7 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		11B30EDC83F5AAD0F002C45B /* DailyContentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyContentService.swift; sourceTree = "<group>"; };
+		12C0E2BFC0408F7683426017 /* VocabGame.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VocabGame.entitlements; sourceTree = "<group>"; };
 		2075FC08CA85D1A6094AAB4C /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
 		52F18F0DB75F1178A1DEC180 /* DailyContentServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyContentServiceTests.swift; sourceTree = "<group>"; };
 		5B292CD117E49D7A7F993CE4 /* ScoringRuleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringRuleTests.swift; sourceTree = "<group>"; };
@@ -84,6 +85,7 @@
 		3C93CADF21E70084A151401E /* VocabGame */ = {
 			isa = PBXGroup;
 			children = (
+				12C0E2BFC0408F7683426017 /* VocabGame.entitlements */,
 				35107C784FCD2CEF4EAB7860 /* App */,
 				4251B0E7EA7AC37E9C528170 /* Design */,
 				ABD223CB936C0B0A5927FE68 /* Features */,
@@ -337,6 +339,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = VocabGame/VocabGame.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Vocab;
@@ -375,6 +378,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = VocabGame/VocabGame.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Vocab;

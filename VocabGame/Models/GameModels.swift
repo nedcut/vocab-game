@@ -207,6 +207,26 @@ struct Player: Identifiable, Hashable, Codable {
   let weeklyScores: [String: Int]
 }
 
+struct UserAccount: Identifiable, Hashable, Codable {
+  let id: String
+  let provider: AccountProvider
+  let displayName: String
+  let email: String?
+  let signedInAt: Date
+}
+
+enum AccountProvider: String, Hashable, Codable {
+  case apple
+  case localDemo
+
+  var title: String {
+    switch self {
+    case .apple: "Apple"
+    case .localDemo: "Local demo"
+    }
+  }
+}
+
 struct LeaderboardRow: Identifiable, Hashable {
   let id: String
   let rank: Int?

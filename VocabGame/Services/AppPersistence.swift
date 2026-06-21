@@ -5,6 +5,7 @@ struct AppSnapshot: Codable, Equatable {
   var joinedGroups: [FriendGroup]
   var completedGames: [String: GameCompletion]
   var hasCompletedOnboarding: Bool
+  var account: UserAccount?
   var notificationsEnabled: Bool
   var preferredReminderHour: Int
 
@@ -13,6 +14,7 @@ struct AppSnapshot: Codable, Equatable {
     joinedGroups: [FriendGroup] = [],
     completedGames: [String: GameCompletion],
     hasCompletedOnboarding: Bool = false,
+    account: UserAccount? = nil,
     notificationsEnabled: Bool,
     preferredReminderHour: Int
   ) {
@@ -20,6 +22,7 @@ struct AppSnapshot: Codable, Equatable {
     self.joinedGroups = joinedGroups
     self.completedGames = completedGames
     self.hasCompletedOnboarding = hasCompletedOnboarding
+    self.account = account
     self.notificationsEnabled = notificationsEnabled
     self.preferredReminderHour = preferredReminderHour
   }
@@ -29,6 +32,7 @@ struct AppSnapshot: Codable, Equatable {
     case joinedGroups
     case completedGames
     case hasCompletedOnboarding
+    case account
     case notificationsEnabled
     case preferredReminderHour
   }
@@ -39,6 +43,7 @@ struct AppSnapshot: Codable, Equatable {
     joinedGroups = try container.decodeIfPresent([FriendGroup].self, forKey: .joinedGroups) ?? []
     completedGames = try container.decode([String: GameCompletion].self, forKey: .completedGames)
     hasCompletedOnboarding = try container.decodeIfPresent(Bool.self, forKey: .hasCompletedOnboarding) ?? false
+    account = try container.decodeIfPresent(UserAccount.self, forKey: .account)
     notificationsEnabled = try container.decode(Bool.self, forKey: .notificationsEnabled)
     preferredReminderHour = try container.decode(Int.self, forKey: .preferredReminderHour)
   }

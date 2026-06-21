@@ -9,11 +9,12 @@ An iPhone-first SwiftUI prototype for private daily word games with friend-group
 - Local mock data for multiple groups, friends, scores, and weekly totals.
 - Persisted local state for selected group, finished games, and reminder settings.
 - First-run onboarding for choosing, creating, or joining a local group.
+- Profile account state with Sign in with Apple UI and a local demo fallback.
 - Spoiler-safe daily leaderboards: friend scores are hidden until you finish that game.
 - Daily aggregate leaderboards once all games are complete.
 - Weekly leaderboards for each game and aggregate totals.
 - Local reminder notification scheduling from the Profile tab.
-- Placeholder profile surface for Apple Sign In, Supabase-backed accounts, and invites.
+- Placeholder backend seams for Supabase-backed accounts, groups, and invites.
 
 ## Tooling
 
