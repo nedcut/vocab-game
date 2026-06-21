@@ -74,6 +74,22 @@ final class AppStoreTests: XCTestCase {
     XCTAssertTrue(store.joinedGroups.isEmpty)
   }
 
+  func testJoinBlankInviteCodeKeepsCurrentSelection() {
+    // OnboardingView disables `Start` when the invite code is blank (`canFinish`) because the
+    // store deliberately ignores blank codes: `joinGroup` trims, then `guard !cleanCode.isEmpty`
+    // returns early. This locks that contract so finishing onboarding in `.join` mode can never
+    // silently leave the player on their default group with no group actually joined.
+    let store = AppStore(
+      persistence: AppPersistence(load: { nil }, save: { _ in })
+    )
+    let originalSelection = store.selectedGroupID
+
+    store.joinGroup(inviteCode: "   ")
+
+    XCTAssertEqual(store.selectedGroupID, originalSelection)
+    XCTAssertTrue(store.joinedGroups.isEmpty)
+  }
+
   private func makeDate(year: Int, month: Int, day: Int) throws -> Date {
     var calendar = Calendar(identifier: .gregorian)
     calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
