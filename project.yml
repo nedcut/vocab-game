@@ -18,6 +18,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.nedcutler.VocabGame
         PRODUCT_NAME: VocabGame
         TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_ENTITLEMENTS: VocabGame/VocabGame.entitlements
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Vocab
         INFOPLIST_KEY_UILaunchScreen_Generation: YES

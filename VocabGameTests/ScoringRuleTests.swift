@@ -63,6 +63,13 @@ final class ScoringRuleTests: XCTestCase {
     let snapshot = AppSnapshot(
       selectedGroupID: "family",
       completedGames: [completion.gameID: completion],
+      account: UserAccount(
+        id: "apple-user-1",
+        provider: .apple,
+        displayName: "Ned",
+        email: "ned@example.com",
+        signedInAt: Date(timeIntervalSince1970: 1_800_000_100)
+      ),
       notificationsEnabled: true,
       preferredReminderHour: 19
     )
@@ -89,6 +96,7 @@ final class ScoringRuleTests: XCTestCase {
     XCTAssertEqual(snapshot.selectedGroupID, "family")
     XCTAssertTrue(snapshot.joinedGroups.isEmpty)
     XCTAssertFalse(snapshot.hasCompletedOnboarding)
+    XCTAssertNil(snapshot.account)
   }
 
   func testLegacyGameCompletionDecodesWithoutStreakMetadata() throws {

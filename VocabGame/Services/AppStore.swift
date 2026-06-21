@@ -26,6 +26,10 @@ final class AppStore {
     didSet { persistIfHydrated() }
   }
 
+  var account: UserAccount? {
+    didSet { persistIfHydrated() }
+  }
+
   var notificationsEnabled = false {
     didSet {
       guard isHydrated else { return }
@@ -74,6 +78,7 @@ final class AppStore {
         : groups[0].id
       completedGames = Self.currentDayCompletions(from: snapshot.completedGames, dateKey: today.dateKey)
       hasCompletedOnboarding = snapshot.hasCompletedOnboarding
+      account = snapshot.account
       notificationsEnabled = snapshot.notificationsEnabled
       preferredReminderHour = snapshot.preferredReminderHour
     }
@@ -174,6 +179,35 @@ final class AppStore {
   func completeOnboarding(enableReminders: Bool) {
     hasCompletedOnboarding = true
     notificationsEnabled = enableReminders
+  }
+
+  func signInWithApple(userID: String, displayName: String?, email: String?) {
+    let existing = account?.id == userID ? account : nil
+    let cleanName = sanitizedName(
+      displayName ?? existing?.displayName ?? "",
+      fallback: currentUser.displayName
+    )
+    account = UserAccount(
+      id: userID,
+      provider: .apple,
+      displayName: cleanName,
+      email: email ?? existing?.email,
+      signedInAt: Date()
+    )
+  }
+
+  func signInWithDemoAccount() {
+    account = UserAccount(
+      id: "local-demo-\(currentUser.id)",
+      provider: .localDemo,
+      displayName: currentUser.displayName,
+      email: nil,
+      signedInAt: Date()
+    )
+  }
+
+  func signOut() {
+    account = nil
   }
 
   func dailyAggregateLeaderboard() -> [LeaderboardRow]? {
@@ -306,6 +340,7 @@ final class AppStore {
       joinedGroups: joinedGroups,
       completedGames: completedGames,
       hasCompletedOnboarding: hasCompletedOnboarding,
+      account: account,
       notificationsEnabled: notificationsEnabled,
       preferredReminderHour: preferredReminderHour
     ))
