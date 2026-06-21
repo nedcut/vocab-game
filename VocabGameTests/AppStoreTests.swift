@@ -109,6 +109,27 @@ final class AppStoreTests: XCTestCase {
     XCTAssertEqual(savedSnapshot?.account, account)
   }
 
+  func testRepeatedAppleSignInPreservesMissingProfileFields() throws {
+    let store = AppStore(
+      persistence: AppPersistence(load: { nil }, save: { _ in })
+    )
+
+    store.signInWithApple(
+      userID: "apple-user-1",
+      displayName: "Ned",
+      email: "ned@example.com"
+    )
+    store.signInWithApple(
+      userID: "apple-user-1",
+      displayName: nil,
+      email: nil
+    )
+
+    let account = try XCTUnwrap(store.account)
+    XCTAssertEqual(account.displayName, "Ned")
+    XCTAssertEqual(account.email, "ned@example.com")
+  }
+
   func testSignOutClearsPersistedAccount() throws {
     let account = UserAccount(
       id: "apple-user-1",
@@ -138,7 +159,8 @@ final class AppStoreTests: XCTestCase {
     store.signOut()
 
     XCTAssertNil(store.account)
-    XCTAssertNil(savedSnapshot?.account)
+    let persistedSnapshot = try XCTUnwrap(savedSnapshot)
+    XCTAssertNil(persistedSnapshot.account)
   }
 
   private func makeDate(year: Int, month: Int, day: Int) throws -> Date {

@@ -182,12 +182,16 @@ final class AppStore {
   }
 
   func signInWithApple(userID: String, displayName: String?, email: String?) {
-    let cleanName = sanitizedName(displayName ?? "", fallback: currentUser.displayName)
+    let existing = account?.id == userID ? account : nil
+    let cleanName = sanitizedName(
+      displayName ?? existing?.displayName ?? "",
+      fallback: currentUser.displayName
+    )
     account = UserAccount(
       id: userID,
       provider: .apple,
       displayName: cleanName,
-      email: email,
+      email: email ?? existing?.email,
       signedInAt: Date()
     )
   }

@@ -155,6 +155,10 @@ struct ProfileView: View {
       )
       authErrorMessage = nil
     case .failure(let error):
+      if let authError = error as? ASAuthorizationError, authError.code == .canceled {
+        authErrorMessage = nil
+        return
+      }
       authErrorMessage = error.localizedDescription
     }
   }
